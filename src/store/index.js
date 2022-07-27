@@ -26,28 +26,34 @@ export default new Vuex.Store({
   actions: {
     getLocation({ commit }) {
       let location = {};
-      commit('toggleLoading')
 
-      navigator.geolocation.getCurrentPosition((pos) => {
-        location = {
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-        };
+      try {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          commit('toggleLoading')
+          location = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          };
 
-        cityInfoApiClien.get(CITY_BY_COORDS(location)).then(({ data }) => {
-          data[ 'name' ] = data[ 'city' ]
-          location = { ...location, ...data }
 
-        });
-
-        weatherApiClient
-          .get(WEATHER_BY_COORDS(location))
-          .then((res) => {
-            location = { ...location, ...res.data };
-            commit('addCity', location)
-            commit('toggleLoading')
+          cityInfoApiClien.get(CITY_BY_COORDS(location)).then(({ data }) => {
+            data[ 'name' ] = data[ 'city' ]
+            location = { ...location, ...data }
           });
-      });
+
+          weatherApiClient
+            .get(WEATHER_BY_COORDS(location))
+            .then((res) => {
+              location = { ...location, ...res.data };
+              commit('addCity', location)
+              commit('toggleLoading')
+
+            });
+        });
+      } catch (e) {
+        console.log(e)
+      }
+
 
     },
     async getCityByName({ commit }, query) {
@@ -69,8 +75,6 @@ export default new Vuex.Store({
   mutations: {
     toggleLoading(state) {
       state.isLoading = !state.isLoading
-      console.log('toggleLoading', state.isLoading)
-
     },
     deleteWeather(state, payload) {
       state.cities = state.cities.filter((el, i) => i != payload)
