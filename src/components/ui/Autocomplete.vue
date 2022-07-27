@@ -4,29 +4,35 @@
     :loading="loading"
     :items="items"
     :search-input.sync="search"
-    cache-items
     class="mx-4"
     flat
     hide-no-data
     hide-details
-    label="What state are you from?"
+    label="What the weather tn the city?"
     solo-inverted
-  ></v-autocomplete>
+  >
+    <template v-slot:item="{ item }">
+      <v-list-item-content @click="getCityByName(cityObj)">
+        <v-list-item-title v-text="item"></v-list-item-title>
+      </v-list-item-content>
+    </template>
+  </v-autocomplete>
 </template>
 
 <script>
-import { accuWeatherClient } from "@/api/index";
+import { citiesApiClient } from "@/api/index";
 import { CITY_BY_QUERY } from "@/api/routes";
+import { mapActions } from "vuex";
 
 export default {
   data() {
     return {
-      inputValue: "",
       loading: false,
       items: [],
       search: null,
       select: null,
       cities: [],
+      cityObj: {},
     };
   },
   watch: {
@@ -35,16 +41,13 @@ export default {
     },
   },
   methods: {
+    ...mapActions(["getCityByName"]),
     querySelections(query) {
       this.loading = true;
-      // `http://dataservice.accuweather.com/locations/v1/cities/search?q=${query}`
-      accuWeatherClient.get(CITY_BY_QUERY(query)).then(({ data }) => {
+      citiesApiClient.get(CITY_BY_QUERY(query)).then(({ data }) => {
         this.items = data.map((city) => {
-          return `${city.LocalizedName}, ${
-            isNaN(city.AdministrativeArea.ID)
-              ? city.AdministrativeArea.ID
-              : city.AdministrativeArea.LocalizedType
-          }, ${city.Country.LocalizedName}`;
+          this.cityObj = city;
+          return `${city.name}, ${city.country}`;
         });
         this.loading = false;
       });
@@ -52,6 +55,3 @@ export default {
   },
 };
 </script>
-
-<style>
-</style>

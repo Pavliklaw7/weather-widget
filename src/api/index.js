@@ -1,17 +1,25 @@
 import axios from 'axios'
 
-const axiosInstance = axios.create({
-  baseURL: '',
+const cityInfoApiClien = axios.create({
+  baseURL: 'https://api.bigdatacloud.net',
 })
 
-const accuWeatherClient = axios.create({
-  baseURL: 'http://dataservice.accuweather.com',
-  params: {
-    apikey: "ZLqtoRNZnsBPhrhQGO14AajDwnuoNYKj",
+const weatherApiClient = axios.create({
+  baseURL: 'https://api.api-ninjas.com/',
+  headers: {
+    'X-Api-Key': "1/4px2mjd3VZgrLQekOlxg==bkuGoKyYqGdcNukk",
+  },
+})
+
+const citiesApiClient = axios.create({
+  baseURL: 'https://api.api-ninjas.com',
+  headers: {
+    'X-Api-Key': "1/4px2mjd3VZgrLQekOlxg==bkuGoKyYqGdcNukk",
   },
 })
 
 export {
-  axiosInstance,
-  accuWeatherClient
+  weatherApiClient,
+  citiesApiClient,
+  cityInfoApiClien
 } 
