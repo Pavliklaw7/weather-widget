@@ -1,0 +1,21 @@
+.v-main__wrap {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  grid-gap: 1rem;
+  width: min(1200px, 90%);
+  margin: 1rem auto;
+  flex: none;
+
+  @media screen and (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.v-card {
+  max-height: 400px !important;
+}

@@ -1,60 +1,49 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-main>
-      <HelloWorld/>
+    <Header />
+    <v-main class="main-wrapper">
+      <Loader :active="getIsLoading" />
+      <Weather
+        v-for="(city, index) in citiesByPage(currentPage)"
+        :key="index"
+        :index="index"
+        :city="city"
+      />
     </v-main>
+    <Pagination
+      v-if="cities.length > itemsPerPage"
+      :currentPage="currentPage"
+      :pages="Math.ceil(cities.length / itemsPerPage)"
+    />
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
-
+import "../src/assets/styles/main.scss";
+import Loader from "./components/ui/Loader.vue";
+import Header from "./components/Header.vue";
+import Weather from "./components/Weather.vue";
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import Pagination from "./components/ui/pagination.vue";
 export default {
-  name: 'App',
-
-  components: {
-    HelloWorld,
+  name: "App",
+  mounted() {
+    this.getLocation();
   },
-
-  data: () => ({
-    //
-  }),
+  components: { Loader, Header, Weather, Pagination },
+  computed: {
+    ...mapGetters([
+      "cities",
+      "citiesByPage",
+      "currentCity",
+      "currentPage",
+      "getIsLoading",
+      "itemsPerPage",
+    ]),
+  },
+  methods: {
+    ...mapActions(["getLocation"]),
+    ...mapMutations(["setCurrentCity"]),
+  },
 };
 </script>
